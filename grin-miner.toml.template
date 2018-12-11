@@ -1,0 +1,55 @@
+[logging]
+log_to_stdout = true
+stdout_log_level = "Info"
+log_to_file = true
+file_log_level = "Info"
+log_file_path = "grin-miner.log"
+log_file_append = true
+
+[mining]
+run_tui = false
+stratum_server_addr = "STRATUM_SERVER_ADDR"
+stratum_server_login = "STRATUM_SERVER_LOGIN"
+stratum_server_password = "STRATUM_SERVER_PASSWORD"
+stratum_server_tls_enabled = false
+miner_plugin_dir = "target/debug/plugins"
+
+[[mining.miner_plugin_config]]
+plugin_name = "cuckaroo_mean_cuda_29"
+[mining.miner_plugin_config.parameters]
+device = 0
+
+[[mining.miner_plugin_config]]
+plugin_name = "cuckaroo_mean_cuda_29"
+[mining.miner_plugin_config.parameters]
+device = 1
+
+[[mining.miner_plugin_config]]
+plugin_name = "cuckaroo_mean_cuda_29"
+[mining.miner_plugin_config.parameters]
+device = 2
+
+[[mining.miner_plugin_config]]
+plugin_name = "cuckaroo_mean_cuda_29"
+[mining.miner_plugin_config.parameters]
+device = 3
+
+[[mining.miner_plugin_config]]
+plugin_name = "cuckaroo_mean_cuda_29"
+[mining.miner_plugin_config.parameters]
+device = 4
+
+[[mining.miner_plugin_config]]
+plugin_name = "cuckaroo_mean_cuda_29"
+[mining.miner_plugin_config.parameters]
+device = 5
+
+[[mining.miner_plugin_config]]
+plugin_name = "cuckaroo_mean_cuda_29"
+[mining.miner_plugin_config.parameters]
+device = 6
+
+[[mining.miner_plugin_config]]
+plugin_name = "cuckaroo_mean_cuda_29"
+[mining.miner_plugin_config.parameters]
+device = 7
