@@ -12,7 +12,7 @@ stratum_server_addr = "STRATUM_SERVER_ADDR"
 stratum_server_login = "STRATUM_SERVER_LOGIN"
 stratum_server_password = "STRATUM_SERVER_PASSWORD"
 stratum_server_tls_enabled = false
-miner_plugin_dir = "target/debug/plugins"
+miner_plugin_dir = "target/release/plugins"
 
 [[mining.miner_plugin_config]]
 plugin_name = "cuckaroo_mean_cuda_29"

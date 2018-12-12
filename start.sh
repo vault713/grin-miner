@@ -20,6 +20,5 @@ EOF
   exit 1
 fi
 
-cd ./grin-miner
 cat grin-miner.toml.template | sed 's/STRATUM_SERVER_ADDR/'$STRATUM_SERVER_ADDR'/g' | sed 's/STRATUM_SERVER_LOGIN/'$STRATUM_SERVER_LOGIN'/g' | sed 's/STRATUM_SERVER_PASSWORD/'$STRATUM_SERVER_PASSWORD'/g' > grin-miner.toml
 ./grin-miner
