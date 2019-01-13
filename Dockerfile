@@ -28,6 +28,7 @@ COPY ./util ./util
 COPY ./plugin ./plugin
 COPY ./config ./config
 COPY ./cuckoo-miner ./cuckoo-miner
+RUN git submodule update --init
 RUN cargo build --release
 
 # runtime stage
