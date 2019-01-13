@@ -28,6 +28,8 @@ COPY ./util ./util
 COPY ./plugin ./plugin
 COPY ./config ./config
 COPY ./cuckoo-miner ./cuckoo-miner
+COPY ./ocl_cuckaroo ./ocl_cuckaroo
+COPY ./ocl_cuckatoo ./ocl_cuckatoo
 RUN git submodule update --init
 RUN cargo build --release
 
