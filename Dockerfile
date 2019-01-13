@@ -30,7 +30,7 @@ COPY ./config ./config
 COPY ./cuckoo-miner ./cuckoo-miner
 COPY ./ocl_cuckaroo ./ocl_cuckaroo
 COPY ./ocl_cuckatoo ./ocl_cuckatoo
-RUN git submodule update --init
+RUN git submodule update --init --recursive
 RUN cargo build --release
 
 # runtime stage
