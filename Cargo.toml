@@ -1,13 +1,21 @@
 [package]
-name = "grin-miner"
-version = "0.4.2"
+name = "grin_miner"
+version = "0.5.2"
 authors = ["Grin Developers <mimblewimble@lists.launchpad.net>"]
-publish = false
+description = "Mining software for Grin, supports CPU and CUDA GPUs."
 build = "src/build/build.rs"
+license = "Apache-2.0"
+repository = "https://github.com/mimblewimble/grin-miner"
+keywords = [ "crypto", "grin", "mimblewimble", "mining"]
 autobins = false
 
 [workspace]
 members = ["config", "util", "plugin"]
+
+[features]
+default = ["tui"]
+opencl = ["ocl_cuckatoo", "ocl_cuckaroo"]
+tui = ["cursive"]
 
 [[bin]]
 name = "grin-miner"
@@ -23,19 +31,19 @@ serde_json = "1"
 slog = { version = "~2.1", features = ["max_level_trace", "release_max_level_trace"] }
 term = "0.4"
 time = "0.1"
-cursive = "0.9.0"
 
-grin_miner_util = { path = "./util" }
-grin_miner_plugin = { path = "./plugin" }
-grin_miner_config = { path = "./config" }
-cuckoo_miner = { path = "./cuckoo-miner" }
-
+grin_miner_util = { path = "./util", version = "0.5.2" }
+grin_miner_plugin = { path = "./plugin", version = "0.5.2" }
+grin_miner_config = { path = "./config", version = "0.5.2" }
+cuckoo_miner = { path = "./cuckoo-miner", version = "0.5.2" }
 #use this alternative inclusion below to build cuda plugins
-#cuckoo_miner = { path = "./cuckoo-miner", features = ["build-cuda-plugins"]}
-#or to build avx2 CPU plugins
-#cuckoo_miner = { path = "./cuckoo-miner", features = ["build-mean-avx2"]}
-#or to build both
-#cuckoo_miner = { path = "./cuckoo-miner", features = ["build-cuda-plugins","build-mean-avx2"]}
+#cuckoo_miner = { path = "./cuckoo-miner", version = "0.5.2", features = ["build-cuda-plugins"]}
+ocl_cuckatoo = { path = "./ocl_cuckatoo", version = "0.5.2", optional = true}
+ocl_cuckaroo = { path = "./ocl_cuckaroo", version = "0.5.2", optional = true}
+
+[dependencies.cursive]
+version = "0.9.0"
+optional = true
 
 [build-dependencies]
 built = "0.2"

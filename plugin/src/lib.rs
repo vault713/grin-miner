@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//! Crate wrapping up the Grin miner plugins
+
 #![deny(non_upper_case_globals)]
 #![deny(non_camel_case_types)]
 #![deny(non_snake_case)]
@@ -110,6 +112,10 @@ pub struct SolverParams {
 	pub recoverblocks: u32,
 	///
 	pub recovertpb: u32,
+	/// OCL platform ID, 0 - default, 1 - AMD, 2 - NVIDIA
+	pub platform: u32,
+	/// edge bits for OCL plugins
+	pub edge_bits: u32,
 }
 
 impl Default for SolverParams {
@@ -132,6 +138,8 @@ impl Default for SolverParams {
 			tailtpb: 0,
 			recoverblocks: 0,
 			recovertpb: 0,
+			platform: 0,
+			edge_bits: 31,
 		}
 	}
 }
@@ -221,6 +229,8 @@ impl SolverStats {
 #[repr(C)]
 #[derive(Clone, Copy)]
 pub struct Solution {
+	/// Optional ID
+	pub id: uint64_t,
 	/// Nonce
 	pub nonce: uint64_t,
 	/// Proof
@@ -230,6 +240,7 @@ pub struct Solution {
 impl Default for Solution {
 	fn default() -> Solution {
 		Solution {
+			id: 0,
 			nonce: 0,
 			proof: [0u64; PROOFSIZE],
 		}

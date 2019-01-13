@@ -210,19 +210,9 @@ impl Controller {
 			return Err(Error::ConnectionError(String::from("No server connection")));
 		}
 		debug!(LOGGER, "sending request: {}", message);
-		let _ = self
-			.stream
-			.as_mut()
-			.unwrap()
-			.write(message.as_bytes())
-			.unwrap();
-		let _ = self
-			.stream
-			.as_mut()
-			.unwrap()
-			.write("\n".as_bytes())
-			.unwrap();
-		let _ = self.stream.as_mut().unwrap().flush().unwrap();
+		let _ = self.stream.as_mut().unwrap().write(message.as_bytes());
+		let _ = self.stream.as_mut().unwrap().write("\n".as_bytes());
+		let _ = self.stream.as_mut().unwrap().flush();
 		Ok(())
 	}
 
@@ -416,19 +406,26 @@ impl Controller {
 					let mut stats = self.stats.write().unwrap();
 					stats.client_stats.last_message_received =
 						format!("Last Message Received: Share Accepted!!");
+					stats.mining_stats.solution_stats.num_shares_accepted += 1;
 					let result = serde_json::to_string(&res.result).unwrap();
 					if result.contains("blockfound") {
 						info!(LOGGER, "Block Found!!");
 						stats.client_stats.last_message_received =
 							format!("Last Message Received: Block Found!!");
+						stats.mining_stats.solution_stats.num_blocks_found += 1;
 					}
 				} else {
 					let err = res.error.unwrap();
 					let mut stats = self.stats.write().unwrap();
 					stats.client_stats.last_message_received = format!(
 						"Last Message Received: Failed to submit a solution: {:?}",
-						err
+						err.message
 					);
+					if err.message.contains("too late") {
+						stats.mining_stats.solution_stats.num_staled += 1;
+					} else {
+						stats.mining_stats.solution_stats.num_rejected += 1;
+					}
 					error!(LOGGER, "Failed to submit a solution: {:?}", err);
 				}
 				()
@@ -456,8 +453,11 @@ impl Controller {
 				} else {
 					// This is a fatal error
 					let err = res.error.unwrap();
+					let mut stats = self.stats.write().unwrap();
+					stats.client_stats.last_message_received = format!("Last Message Received: Failed to log in: {:?}", err);
+					stats.client_stats.connection_status = "Connection Status: Server requires login".to_string();
+					stats.client_stats.connected = false;
 					error!(LOGGER, "Failed to log in: {:?}", err);
-					panic!("Failed to log in to stratum server: {:?}", err);
 				}
 			}
 			// unknown method response
@@ -499,6 +499,7 @@ impl Controller {
 						let mut stats = self.stats.write().unwrap();
 						stats.client_stats.connection_status = status;
 						stats.client_stats.connected = false;
+						self.stream = None;
 					} else {
 						let status = format!(
 							"Connection Status: Connected to Grin server at {}.",
@@ -509,6 +510,10 @@ impl Controller {
 						stats.client_stats.connection_status = status;
 					}
 					next_server_retry = time::get_time().sec + server_retry_interval;
+					if let None = self.stream {
+						thread::sleep(std::time::Duration::from_secs(1));
+						continue;
+					}
 				}
 			} else {
 				// get new job template
@@ -553,6 +558,7 @@ impl Controller {
 						Err(e) => {
 							error!(LOGGER, "Error reading message: {:?}", e);
 							self.stream = None;
+							continue;
 						}
 					}
 					next_server_read = time::get_time().sec + server_read_interval;
@@ -580,9 +586,10 @@ impl Controller {
 				};
 				if let Err(e) = result {
 					error!(LOGGER, "Mining Controller Error {:?}", e);
+					self.stream = None;
 				}
 			}
-			thread::sleep(std::time::Duration::from_millis(100));
+			thread::sleep(std::time::Duration::from_millis(10));
 		} // loop
 	}
 }

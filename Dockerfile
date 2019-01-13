@@ -11,8 +11,8 @@ RUN set -ex && \
         cmake \
         git \
         curl \
-		pkg-config \
-		libssl-dev
+        libssl-dev \
+        pkg-config
 
 
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y

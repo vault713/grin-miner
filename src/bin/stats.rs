@@ -17,16 +17,45 @@
 
 /// Struct to return relevant information about the mining process
 /// back to interested callers (such as the TUI)
+
 use plugin;
+
+#[derive(Clone)]
+pub struct SolutionStats {
+	/// total solutions found
+	pub num_solutions_found: u32,
+	/// total shares accepted
+	pub num_shares_accepted: u32,
+	/// total solutions rejected
+	pub num_rejected: u32,
+	/// total solutions staled
+	pub num_staled: u32,
+	/// total blocks found
+	pub num_blocks_found: u32,
+}
+
+impl Default for SolutionStats {
+	fn default() -> SolutionStats {
+		SolutionStats {
+			num_solutions_found: 0,
+			num_shares_accepted: 0,
+			num_rejected: 0,
+			num_staled: 0,
+			num_blocks_found: 0,
+		}
+	}
+}
 
 #[derive(Clone)]
 pub struct MiningStats {
 	/// combined graphs per second
-	pub combined_gps: f64,
+	combined_gps: Vec<f64>,
 	/// what block height we're mining at
 	pub block_height: u64,
 	/// current target for share difficulty we're working on
 	pub target_difficulty: u64,
+	/// solution statistics
+	pub solution_stats: SolutionStats,
 	/// Individual device status from Cuckoo-Miner
 	pub device_stats: Vec<plugin::SolverStats>,
 }
@@ -34,10 +63,27 @@ pub struct MiningStats {
 impl Default for MiningStats {
 	fn default() -> MiningStats {
 		MiningStats {
-			combined_gps: 0.0,
+			combined_gps: vec![],
 			block_height: 0,
 			target_difficulty: 0,
+			solution_stats: SolutionStats::default(),
 			device_stats: vec![],
+		}
+	}
+}
+
+impl MiningStats {
+	pub fn add_combined_gps(&mut self, val: f64) {
+		self.combined_gps.insert(0, val);
+		self.combined_gps.truncate(50);
+	}
+
+	pub fn combined_gps(&self) -> f64 {
+		if self.combined_gps.is_empty() {
+			0.0
+		} else {
+			let sum: f64 = self.combined_gps.iter().sum();
+			sum / (self.combined_gps.len() as f64)
 		}
 	}
 }

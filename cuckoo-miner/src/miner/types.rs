@@ -13,10 +13,8 @@
 // limitations under the License.
 
 //! Miner types
-use std::env;
 use std::sync::{Arc, RwLock};
 
-use config::types::SO_SUFFIX;
 use plugin::{SolverSolutions, SolverStats};
 use CuckooMinerError;
 use {PluginConfig, PluginLibrary};
@@ -39,15 +37,7 @@ pub struct SolverInstance {
 impl SolverInstance {
 	/// Create a new solver instance with the given config
 	pub fn new(config: PluginConfig) -> Result<SolverInstance, CuckooMinerError> {
-		let mut p_path = env::current_exe().unwrap();
-		p_path.pop();
-		// cargo test exes are a directory further down
-		if p_path.ends_with("deps") {
-			p_path.pop();
-		}
-		p_path.push("plugins");
-		p_path.push(format!("{}{}", config.name, SO_SUFFIX).as_str());
-		let l = PluginLibrary::new(p_path.to_str().unwrap())?;
+		let l = PluginLibrary::new(&config.file)?;
 		Ok(SolverInstance {
 			lib: l,
 			config: config,
@@ -66,6 +56,9 @@ impl SolverInstance {
 pub struct JobSharedData {
 	/// ID of the current running job (not currently used)
 	pub job_id: u32,
+
+	/// block height of current running job
+	pub height: u64,
 
 	/// The part of the header before the nonce, which this
 	/// module will mutate in search of a solution
@@ -89,6 +82,7 @@ impl Default for JobSharedData {
 	fn default() -> JobSharedData {
 		JobSharedData {
 			job_id: 0,
+			height: 0,
 			pre_nonce: String::from(""),
 			post_nonce: String::from(""),
 			difficulty: 0,
@@ -102,6 +96,7 @@ impl JobSharedData {
 	pub fn new(num_solvers: usize) -> JobSharedData {
 		JobSharedData {
 			job_id: 0,
+			height: 0,
 			pre_nonce: String::from(""),
 			post_nonce: String::from(""),
 			difficulty: 1,
