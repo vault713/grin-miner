@@ -21,6 +21,8 @@ ENV PATH="/root/.cargo/bin:$PATH"
 RUN USER=root cargo new --bin grin-miner
 
 WORKDIR /grin-miner
+COPY ./.git ./.git
+COPY ./.gitmodules ./.gitmodules
 COPY ./Cargo.lock ./Cargo.lock
 COPY ./Cargo.toml.docker ./Cargo.toml
 COPY ./src ./src
